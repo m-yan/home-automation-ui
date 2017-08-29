@@ -1,0 +1,126 @@
+@font-face {
+    font-family: "Metric";
+    src: url(fonts/MetricWeb-Regular.woff) format("woff")
+}
+
+@font-face {
+    font-family: "Metric";
+    src: url(fonts/MetricWeb-Bold.woff) format("woff");
+    font-weight: 700
+}
+
+@font-face {
+    font-family: "Metric";
+    src: url(fonts/MetricWeb-Semibold.woff) format("woff");
+    font-weight: 600
+}
+
+@font-face {
+    font-family: "Metric";
+    src: url(fonts/MetricWeb-Light.woff) format("woff");
+    font-weight: 100
+}
+
+
+.logo {
+  height: 50px;
+  margin-right: 10px;
+  float: left;
+}
+
+.panel {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 0px ! important;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.floor-layout-panel {
+  height: 370px;
+}
+
+.panel-header {
+  text-align: left;
+  font-size: 110%;
+  padding-left: 2px;
+  padding-bottom: 3px;
+  margin-bottom: 10px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: rgb(0,169,130);
+}
+
+.panel-body {
+  padding-top: 0px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-bottom: 0px;
+  margin-bottom: 5px;
+}
+
+.panel-body .row {
+  margin-bottom: 10px;
+}
+
+.relative {
+  position: relative;
+  max-width: 600px;
+  margin: auto;
+}
+
+
+.floor-layout-img {
+  margin-top: 10px;
+  max-width: 100%;
+}
+
+.navbar-inverse {
+  background-color: #425563;
+  border-color: #425563;
+  border-radius: 0px;
+}
+
+.navbar-inverse .navbar-brand {
+  color: #fff;
+  font-size: 22px;
+}
+
+strong {
+  font-size: 130%;
+}
+
+.row-center{
+letter-spacing:-0.4em;
+}
+.row-center > [class*='col-'] {
+display:inline-block;
+letter-spacing:0;
+vertical-align:top;
+float:none !important;
+}
+
+.row-center.va-middle > [class*='col-'] {
+vertical-align:middle;
+}
+.row-center.va-bottom > [class*='col-'] {
+vertical-align:bottom;
+}
+
+
+.extraClass {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.4), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  font-size: 14px !important;
+}
+
+.extraClass:hover {
+  visibility: visible !important;
+}
+
+.btn {
+  margin: 5px;
+  border-radius: 0px;
+}
