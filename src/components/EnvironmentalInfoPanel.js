@@ -25,13 +25,16 @@ export default class EnvironmentalInfoPanel extends Component {
   renewEnvironmentalInfo() {
     const self = this
     request
-      .get('http://52.246.186.209/CSE0001/api/rooms/5/environmental_info')
-      .set('Authorization', 'bearer 57c102a1b53645f71e4151d41b92d740690aab71250ef8cbf5e6e130b414498a')
+      .get('/HPE_IoT/hgw01/environmentalData/latest')
+      .set('Accept', 'application/vnd.onem2m-res+json')
+      .set('X-M2M-RI', 'RI_xxxxx')
+      .set('X-M2M-Origin', 'C55DED47A-524c10a0')
+      .set('Authorization', 'QzU1REVENDdBLTUyNGMxMGEwOlFURllVV0hNUU8=')
       .end(function(err, res){
         if (err || !res.ok) {
           console.log(res);
         } else {
-          self.setState(res.body);
+          self.setState(JSON.parse(res.body["m2m:cin"].con));
         }
       });
   }

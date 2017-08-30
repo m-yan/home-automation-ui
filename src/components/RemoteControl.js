@@ -11,30 +11,27 @@ export default class RemoteControl extends Component {
     this.powerOff = this.powerOff.bind(this);
   }
 
-
-  handleClick() {
-    this.setState(prevState => ({
-      monitoringMode: !prevState.monitoringMode, isDanger: false
-    }));
-    this.setMonitoringMode(this.state.monitoringMode);
-  }
-
   powerOn() {
-    this.remoteControl("power_on");
+    this.remoteControl(this.props.infraredId.powerOn);
   }
 
   powerOff() {
-    this.remoteControl("power_off");
+    this.remoteControl(this.props.infraredId.powerOff);
   }
 
-  remoteControl(operateType) {
+  remoteControl(infraredId) {
+    const requestBody = { 'm2m:cin': { ty: 4, cnf: "text/plain:0", con: infraredId }};
+    
     request
-      .put('http://52.246.186.209/CSE0001/api/devices/' + this.props.deviceId)
-      .set('Content-Type', 'application/json')
-      .set('Authorization', 'bearer 57c102a1b53645f71e4151d41b92d740690aab71250ef8cbf5e6e130b414498a')
-      .send({ operation_type: operateType })
+      .post('/HPE_IoT/hgw01/iRemoconCommands')
+      .set('Content-Type', 'application/vnd.onem2m-res+json; ty=4')
+      .set('Accept', 'application/vnd.onem2m-res+json')
+      .set('X-M2M-RI', 'RI_xxxxx')
+      .set('X-M2M-Origin', 'C55DED47A-524c10a0')
+      .set('Authorization', 'QzU1REVENDdBLTUyNGMxMGEwOlFURllVV0hNUU8=')
+      .send(requestBody)
       .end(function(err, res){
-        console.log(res);
+        console.log(res.status);
       });
   }  
 

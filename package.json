@@ -2,6 +2,7 @@
   "name": "ha-ui",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://sp-uiot.japaneast.cloudapp.azure.com:10080/home-automation",
   "dependencies": {
     "rc-switch": "^1.5.2",
     "react": "^15.6.1",

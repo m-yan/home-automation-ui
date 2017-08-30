@@ -11,6 +11,7 @@ export default class MonitoringPanel extends Component {
     super(props);
     this.state = {monitoringMode: false, isDetected: false, isDanger: false};
     this.getMonitoringMode()
+    this.getSensedState()
     this.handleClick = this.handleClick.bind(this);
   }
 
@@ -32,26 +33,19 @@ export default class MonitoringPanel extends Component {
     this.setState(prevState => ({
       monitoringMode: !prevState.monitoringMode, isDanger: false
     }));
-    this.setMonitoringMode(this.state.monitoringMode);
+    this.setMonitoringMode(! this.state.monitoringMode);
   }
 
 
   getMonitoringMode() {
     const self = this
     request
-      .get('http://52.246.186.209/CSE0001/api/houses/self/monitoring_states')
-      .set('Authorization', 'bearer 57c102a1b53645f71e4151d41b92d740690aab71250ef8cbf5e6e130b414498a')
+      .get('/api/home_status')
       .end(function(err, res){
         if (err || !res.ok) {
           console.log(res);
         } else {
-          let mode = null;
-          if (res.body.monitoring_mode === 1) {
-            mode = false;
-          } else {
-            mode = true;
-          }
-          self.setState({monitoringMode: mode});
+          self.setState(res.body);
         }
       });
   }
@@ -60,13 +54,16 @@ export default class MonitoringPanel extends Component {
   getSensedState() {
     const self = this
     request
-      .get('http://52.246.186.209/CSE0001/api/houses/self/monitoring_states')
-      .set('Authorization', 'bearer 57c102a1b53645f71e4151d41b92d740690aab71250ef8cbf5e6e130b414498a')
+      .get('/HPE_IoT/hgw01/motionSensorData/latest')
+      .set('Accept', 'application/vnd.onem2m-res+json')
+      .set('X-M2M-RI', 'RI_xxxxx')
+      .set('X-M2M-Origin', 'C55DED47A-524c10a0')
+      .set('Authorization', 'QzU1REVENDdBLTUyNGMxMGEwOlFURllVV0hNUU8=')
       .end(function(err, res){
         if (err || !res.ok) {
           console.log(res);
         } else {
-          const isDetected = res.body.monitoring_sensors[0].sensed_state;
+          const isDetected = res.body["m2m:cin"].con === "0"? false : true
           if (self.state.monitoringMode && ! self.state.isDanger && isDetected) {
             self.setState({isDetected: isDetected, isDanger: true});
           } else {
@@ -78,15 +75,12 @@ export default class MonitoringPanel extends Component {
 
 
   setMonitoringMode(monitoringMode) {
-    const mode = monitoringMode? 1 : 3;
-
     request
-      .put('http://52.246.186.209/CSE0001/api/houses/self/monitoring_mode')
+      .put('/api/home_status')
       .set('Content-Type', 'application/json')
-      .set('Authorization', 'bearer 57c102a1b53645f71e4151d41b92d740690aab71250ef8cbf5e6e130b414498a')
-      .send({mode: mode})
+      .send({monitoringMode: monitoringMode})
       .end(function(err, res){
-        //console.log(res.status);
+        console.log(res.status);
       });
   }  
 

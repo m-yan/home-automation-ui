@@ -28,16 +28,21 @@ export default class EventLogPanel extends Component {
   getEventLogs() {
     const self = this;
     request
-      .get('http://52.246.186.209/CSE0001/api/users/self/events/')
-      .set('Authorization', 'bearer 57c102a1b53645f71e4151d41b92d740690aab71250ef8cbf5e6e130b414498a')
+      .get('/HPE_IoT/hgw01/default/?ty=4&lim=20')
+      .set('Accept', 'application/vnd.onem2m-res+json')
+      .set('X-M2M-RI', 'RI_xxxxx')
+      .set('X-M2M-Origin', 'C55DED47A-524c10a0')
+      .set('Authorization', 'QzU1REVENDdBLTUyNGMxMGEwOlFURllVV0hNUU8=')
       .end(function(err, res){
         if (err || !res.ok) {
           console.log(res);
-        } else {
-          const events = res.body.events.map(function(element, index, array) {
-            const date = element.occurred_at;
-            let date_formatted = date.substr(0,10) + " " + date.substr(11,8);
-            return ({id: element.id, event_type_desc: element.event_type_desc, occurred_at: date_formatted});
+        } else if (res.body) {
+          const events = res.body.map(function(element, index, array) {
+            const event = element["m2m:cin"].con
+            const date = element["m2m:cin"].ct
+            const jst_time = ("0" + (Number(date.substr(9,2)) + 9)).substr(-2)
+            let date_formatted = date.substr(0,4) + "/" + date.substr(4,2) + "/" + date.substr(6,2) + " " + jst_time + ":" + date.substr(11,2) + ":" + date.substr(13,2);
+            return ({event_type_desc: event, occurred_at: date_formatted});
           });
           self.setState({events: events});
         }
@@ -54,11 +59,12 @@ export default class EventLogPanel extends Component {
     return (
       <div className="panel">
         <div className="panel-header">イベント</div>
-        <BootstrapTable data={this.state.events} striped hover bordered={ false } pagination options={ options } condensed>
-          <TableHeaderColumn isKey dataField='id' width="20%">ID</TableHeaderColumn>
-          <TableHeaderColumn dataField='event_type_desc' width="50%">内容</TableHeaderColumn>
-          <TableHeaderColumn dataField='occurred_at' width="30%">日時</TableHeaderColumn>
-        </BootstrapTable>
+        <div className="panel-body">
+          <BootstrapTable data={this.state.events} striped hover bordered={ false } pagination options={ options } condensed>
+            <TableHeaderColumn dataField='event_type_desc' isKey width="60%">内容</TableHeaderColumn>
+            <TableHeaderColumn dataField='occurred_at' width="40%">日時</TableHeaderColumn>
+          </BootstrapTable>
+        </div>
       </div>
     );
   }

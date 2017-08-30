@@ -17,7 +17,7 @@ export default class Light extends Component {
       <div>
         <img src={light} alt="" style={style} data-tip data-for={this.props.id} />
         <ReactTooltip id={this.props.id} effect="solid" type="light" place="right" delayHide={1000} class='extraClass' >
-          <RemoteControl title={this.props.title} deviceId={21} />
+          <RemoteControl title={this.props.title} infraredId={{powerOn: 3, powerOff: 4}} />
         </ReactTooltip>
       </div>
     );

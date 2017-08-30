@@ -17,7 +17,7 @@ export default class Aircon extends Component {
       <div>
         <img src={aircon} alt="" style={style} data-tip data-for={this.props.id} />
         <ReactTooltip id={this.props.id} effect="solid" type="light" place="right" delayHide={1000} class="extraClass">
-          <RemoteControl title={this.props.title} deviceId={25} />
+          <RemoteControl title={this.props.title} infraredId={{powerOn: 1, powerOff: 2}} />
         </ReactTooltip>
       </div>
     );
