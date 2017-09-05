@@ -13,27 +13,33 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {updateInterval: 3000};
+    this.state = {autoUpdate: false, updateInterval: 3000};
+    this.handleChangeAutoUpdate = this.handleChangeAutoUpdate.bind(this);
   }
 
+  handleChangeAutoUpdate() {
+    this.setState(prevState => ({
+      autoUpdate: !prevState.autoUpdate
+    }));
+  }
 
   render() {
     return (
       <div className="App">
-        <Header />
+        <Header switchChecked={this.state.autoUpdate} onClick={this.handleChangeAutoUpdate} />
         <Grid>
           <Row>
             <Col sm={8} xs={12}>
               <FloorLayoutPanel />
             </Col>
             <Col sm={4} xs={12}>
-              <EnvironmentalInfoPanel updateInterval={this.state.updateInterval} />
-              <MonitoringPanel updateInterval={this.state.updateInterval} />
+              <EnvironmentalInfoPanel autoUpdate={this.state.autoUpdate} updateInterval={this.state.updateInterval} />
+              <MonitoringPanel autoUpdate={this.state.autoUpdate} updateInterval={this.state.updateInterval} />
             </Col>
           </Row>
           <Row>
             <Col xs={12}>
-              <EventLogPanel updateInterval={this.state.updateInterval} />
+              <EventLogPanel autoUpdate={this.state.autoUpdate} updateInterval={this.state.updateInterval} />
             </Col>
           </Row>
         </Grid>

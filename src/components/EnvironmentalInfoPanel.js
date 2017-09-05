@@ -8,7 +8,7 @@ export default class EnvironmentalInfoPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {temperature: "-", humidity: "-", illuminance: "-"};
-    this.renewEnvironmentalInfo()
+    this.getEnvironmentalInfo();
   }
 
   componentDidMount() {
@@ -22,7 +22,7 @@ export default class EnvironmentalInfoPanel extends Component {
     clearInterval(this.timerID);
   }
 
-  renewEnvironmentalInfo() {
+  getEnvironmentalInfo() {
     const self = this
     request
       .get('/HPE_IoT/hgw01/environmentalData/latest')
@@ -37,6 +37,12 @@ export default class EnvironmentalInfoPanel extends Component {
           self.setState(JSON.parse(res.body["m2m:cin"].con));
         }
       });
+  }
+
+  renewEnvironmentalInfo() {
+    if (this.props.autoUpdate) {
+      this.getEnvironmentalInfo();
+    }
   }
 
   render() {

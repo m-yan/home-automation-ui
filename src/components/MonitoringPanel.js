@@ -18,7 +18,7 @@ export default class MonitoringPanel extends Component {
 
   componentDidMount() {
     this.timerID = setInterval(
-      () => this.getSensedState(),
+      () => this.renewSensedState(),
       this.props.updateInterval
     );
   }
@@ -71,6 +71,13 @@ export default class MonitoringPanel extends Component {
           }
         }
       });
+  }
+
+
+  renewSensedState() {
+    if (this.props.autoUpdate) {
+      this.getSensedState();
+    }
   }
 
 

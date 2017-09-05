@@ -11,19 +11,16 @@ export default class EventLogPanel extends Component {
     this.getEventLogs();
   }
 
-
   componentDidMount() {
     this.timerID = setInterval(
-      () => this.getEventLogs(),
+      () => this.renewEventLogs(),
       this.props.updateInterval
     );
   }
 
-
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
-
 
   getEventLogs() {
     const self = this;
@@ -40,8 +37,9 @@ export default class EventLogPanel extends Component {
           const events = res.body.map(function(element, index, array) {
             const event = element["m2m:cin"].con
             const date = element["m2m:cin"].ct
-            const jst_time = ("0" + (Number(date.substr(9,2)) + 9)).substr(-2)
-            let date_formatted = date.substr(0,4) + "/" + date.substr(4,2) + "/" + date.substr(6,2) + " " + jst_time + ":" + date.substr(11,2) + ":" + date.substr(13,2);
+            const jst_date = ("0" + (Number(date.substr(6,2)) + Math.floor((Number(date.substr(9,2)) + 9) / 24 ))).substr(-2)
+            const jst_time = ("0" + (Number(date.substr(9,2)) + 9) % 24 ).substr(-2)
+            let date_formatted = date.substr(0,4) + "/" + date.substr(4,2) + "/" + jst_date + " " + jst_time + ":" + date.substr(11,2) + ":" + date.substr(13,2);
             return ({event_type_desc: event, occurred_at: date_formatted});
           });
           self.setState({events: events});
@@ -49,6 +47,11 @@ export default class EventLogPanel extends Component {
       });
   }
 
+  renewEventLogs() {
+    if (this.props.autoUpdate) {
+      this.getEventLogs();
+    }
+  }
 
   render() {
     const options = {
