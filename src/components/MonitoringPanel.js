@@ -9,7 +9,7 @@ export default class MonitoringPanel extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {monitoringMode: false, isDetected: false, isDanger: false};
+    this.state = {monitoringMode: false, isDetected: false, isDanger: false, ws: null};
     this.getMonitoringMode()
     this.getSensedState()
     this.handleClick = this.handleClick.bind(this);
@@ -17,15 +17,25 @@ export default class MonitoringPanel extends Component {
 
 
   componentDidMount() {
-    this.timerID = setInterval(
-      () => this.renewSensedState(),
-      this.props.updateInterval
-    );
+    let ws = new WebSocket("ws://sp-uiot.japaneast.cloudapp.azure.com:10080/ws/monitoring_mode");
+    ws.onmessage = this.handleMessage.bind(this);
+    this.setState({ws: ws});
   }
 
 
   componentWillUnmount() {
-    clearInterval(this.timerID);
+    this.state.ws.close();
+  }
+
+
+  handleMessage(event) {
+    const notification = JSON.parse(event.data);
+    const isDetected = notification["m2m:cin"].con === "0"? false : true
+    if (this.state.monitoringMode && ! this.state.isDanger && isDetected) {
+      this.setState({isDetected: isDetected, isDanger: true});
+    } else {
+      this.setState({isDetected: isDetected});
+    }
   }
 
 
@@ -71,13 +81,6 @@ export default class MonitoringPanel extends Component {
           }
         }
       });
-  }
-
-
-  renewSensedState() {
-    if (this.props.autoUpdate) {
-      this.getSensedState();
-    }
   }
 
 

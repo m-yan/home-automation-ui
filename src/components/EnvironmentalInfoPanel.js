@@ -7,20 +7,28 @@ export default class EnvironmentalInfoPanel extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {temperature: "-", humidity: "-", illuminance: "-"};
+    this.state = {temperature: "-", humidity: "-", illuminance: "-", ws: null};
     this.getEnvironmentalInfo();
   }
 
+
   componentDidMount() {
-    this.timerID = setInterval(
-      () => this.renewEnvironmentalInfo(),
-      this.props.updateInterval     
-    );
+    let ws = new WebSocket("ws://sp-uiot.japaneast.cloudapp.azure.com:10080/ws/environmental_info");
+    ws.onmessage = this.handleMessage.bind(this);
+    this.setState({ws: ws});
   }
 
+
   componentWillUnmount() {
-    clearInterval(this.timerID);
+    this.state.ws.close();
   }
+
+
+  handleMessage(event) {
+    const notification = JSON.parse(event.data);
+    this.setState(JSON.parse(notification["m2m:cin"].con));
+  }
+
 
   getEnvironmentalInfo() {
     const self = this
@@ -39,11 +47,6 @@ export default class EnvironmentalInfoPanel extends Component {
       });
   }
 
-  renewEnvironmentalInfo() {
-    if (this.props.autoUpdate) {
-      this.getEnvironmentalInfo();
-    }
-  }
 
   render() {
     return (

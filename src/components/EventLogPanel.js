@@ -7,19 +7,29 @@ export default class EventLogPanel extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {events: null};
+    this.state = {events: null, ws: null};
     this.getEventLogs();
   }
 
   componentDidMount() {
-    this.timerID = setInterval(
-      () => this.renewEventLogs(),
-      this.props.updateInterval
-    );
+    let ws = new WebSocket("ws://sp-uiot.japaneast.cloudapp.azure.com:10080/ws/events");
+    ws.onmessage = this.handleMessage.bind(this);
+    this.setState({ws: ws});
   }
 
   componentWillUnmount() {
-    clearInterval(this.timerID);
+    this.state.ws.close();
+  }
+
+  handleMessage(event) {
+    const notification = JSON.parse(event.data);
+    const log = notification["m2m:cin"].con;
+    const date = notification["m2m:cin"].ct;
+    const jst_date = ("0" + (Number(date.substr(6,2)) + Math.floor((Number(date.substr(9,2)) + 9) / 24 ))).substr(-2);
+    const jst_time = ("0" + (Number(date.substr(9,2)) + 9) % 24 ).substr(-2);
+    let date_formatted = date.substr(0,4) + "/" + date.substr(4,2) + "/" + jst_date + " " + jst_time + ":" + date.substr(11,2) + ":" + date.substr(13,2);
+    this.state.events.unshift({event_type_desc: log, occurred_at: date_formatted});
+    this.setState({events: this.state.events});
   }
 
   getEventLogs() {
@@ -35,10 +45,10 @@ export default class EventLogPanel extends Component {
           console.log(res);
         } else if (res.body) {
           const events = res.body.map(function(element, index, array) {
-            const event = element["m2m:cin"].con
-            const date = element["m2m:cin"].ct
-            const jst_date = ("0" + (Number(date.substr(6,2)) + Math.floor((Number(date.substr(9,2)) + 9) / 24 ))).substr(-2)
-            const jst_time = ("0" + (Number(date.substr(9,2)) + 9) % 24 ).substr(-2)
+            const event = element["m2m:cin"].con;
+            const date = element["m2m:cin"].ct;
+            const jst_date = ("0" + (Number(date.substr(6,2)) + Math.floor((Number(date.substr(9,2)) + 9) / 24 ))).substr(-2);
+            const jst_time = ("0" + (Number(date.substr(9,2)) + 9) % 24 ).substr(-2);
             let date_formatted = date.substr(0,4) + "/" + date.substr(4,2) + "/" + jst_date + " " + jst_time + ":" + date.substr(11,2) + ":" + date.substr(13,2);
             return ({event_type_desc: event, occurred_at: date_formatted});
           });
@@ -47,11 +57,6 @@ export default class EventLogPanel extends Component {
       });
   }
 
-  renewEventLogs() {
-    if (this.props.autoUpdate) {
-      this.getEventLogs();
-    }
-  }
 
   render() {
     const options = {
